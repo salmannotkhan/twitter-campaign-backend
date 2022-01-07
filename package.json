@@ -1,0 +1,19 @@
+{
+    "name": "twitter-campaign-backend",
+    "version": "1.0.0",
+    "description": "",
+    "type": "module",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon src/index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^0.24.0",
+        "dotenv": "^10.0.0",
+        "express": "^4.17.2",
+        "nodemon": "^2.0.15"
+    }
+}
