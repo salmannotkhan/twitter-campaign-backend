@@ -10,20 +10,23 @@ export const getUsername = (users) => {
     const LINK_REGEX = /(?<=twitter.com\/).*(?=\?)/;
     const ALT_REGEX = /(?<=twitter.com\/).*/;
     const STATUS_REGEX = /\/status.*/;
+    const USERNAME_REGEX = /^[A-Za-z0-9_]{1,15}$/;
 
     return users.map((user) => {
         var username;
-        if (LINK_REGEX.test(user)) {
+        if (user.startsWith("@")) {
+            username = user;
+        } else if (LINK_REGEX.test(user)) {
             username = LINK_REGEX.exec(user)[0];
         } else if (ALT_REGEX.test(user)) {
             username = ALT_REGEX.exec(user)[0];
         }
         if (!username) {
-            return;
+            return "";
         }
         username = username.replace("@", "");
         username = username.replace(STATUS_REGEX, "");
-        return username;
+        return USERNAME_REGEX.test(username) ? username : "";
     });
 };
 
