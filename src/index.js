@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import formidable from "formidable";
 import xlsx from "xlsx";
 import "dotenv/config";
@@ -6,20 +7,27 @@ import { getUsername, getFollowers } from "./helpers/twitter.js";
 
 const PORT = 3000;
 const app = express();
+app.use(cors());
 
 app.get("/", (req, res) => {
     return res.status(200).send({ hello: "world" });
 });
 
-app.get("/process", async (req, res, next) => {
-    var form = new formidable.IncomingForm();
+app.post("/process", async (req, res, next) => {
+    var form = formidable();
+    res.setHeader("Content-Disposition", "attachment;filename=output.xlsx");
+    res.setHeader("Content-type", "application/octet-stream");
+
     form.parse(req, async (err, fields, files) => {
         if (err) {
             next(err);
             return;
         }
         const xlsxFile = files[Object.keys(files)[0]];
-        const wb = xlsx.readFile(xlsxFile.path);
+        if (!xlsxFile) {
+            return res.status(400).send({ error: "No file uploaded" });
+        }
+        const wb = xlsx.readFile(xlsxFile[0].filepath);
         const worksheetName = wb.SheetNames[0];
         var jsonData = xlsx.utils.sheet_to_json(wb.Sheets[worksheetName]);
         const twitterLinks = jsonData.map((data) => data.twitter);
@@ -60,6 +68,7 @@ app.get("/process", async (req, res, next) => {
         return res.status(200).send(processedFile);
     });
 });
+
 app.get("/:name", (req, res) => {
     return res.send(`this is test path ${req.params.name}`);
 });
